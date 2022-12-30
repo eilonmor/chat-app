@@ -1,6 +1,7 @@
 import { Message } from '../types/message';
 import { mockUsers } from '../assets/mockUsers'; // todo: remove this line after server implementation
-
+import fetch from 'cross-fetch';
+import 'cross-fetch/polyfill';
 const endpoint = '../assets/'; // todo: add endpoint (server) address (starting with http://)
 
 
@@ -8,19 +9,42 @@ const endpoint = '../assets/'; // todo: add endpoint (server) address (starting 
  * GET Request to get the list of messages
  **/
 export async function getMessages() {
-  // todo: replace this with fetch to get the messages from the server
-  const { mockMessages } = await import(`${endpoint}/mockMessages`);
+  try {
+    const res = await fetch('http://localhost:8000/users');
+    
+    if (res.status >= 400) {
+      throw new Error("Bad response from server");
+    }
+    
+    const user = await res.json();
+  
+    console.log(user);
+  } catch (err) {
+    console.error(err);
+  }
+  };
 
+  // todo: replace this with fetch to get the messages from the server
+  // const { mockMessages } = await import(`${endpoint}/mockMessages`);
+  // const url = "http://localhost:3003/mockMessages"
+  // const respon = await fetch(url)
+  // const data = await respon.json()
+  // return console.log(data)
+  // fetch('http://localhost:3003/mockMessages')
+  // .then(resp => resp.json())
+  // .then(data => {
+  //   console.log(data)
+  // })
   // todo: this should be implemented in the server. Chat Messages should already have the authors' names.
   // todo: remove this mapping when getting the data from the server
-  const mockMessagesWithNames = mockMessages.map((message: Message) => {
-    const author = mockUsers.find(user => user.id === message.authorId);
-    const authorName = author && author.name;
-    return { ...message, authorName };
-  });
+  // const mockMessagesWithNames = mockMessages.map((message: Message) => {
+  //   const author = mockUsers.find(user => user.id === message.authorId);
+  //   const authorName = author && author.name;
+  //   return { ...message, authorName };
+  // });
 
-  return mockMessagesWithNames;
-}
+  // return mockMessagesWithNames;
+
 
 /**
  * GET request to get the full list of users - id + name
