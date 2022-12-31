@@ -2,7 +2,7 @@ import { Message } from '../types/message';
 import { mockUsers } from '../assets/mockUsers'; // todo: remove this line after server implementation
 import fetch from 'cross-fetch';
 import 'cross-fetch/polyfill';
-const endpoint = '../assets/'; // todo: add endpoint (server) address (starting with http://)
+const endpoint = 'http://localhost:8000'; // todo: add endpoint (server) address (starting with http://)
 
 
 /**
@@ -10,40 +10,25 @@ const endpoint = '../assets/'; // todo: add endpoint (server) address (starting 
  **/
 export async function getMessages() {
   try {
-    const res = await fetch('http://localhost:8000/users');
+    const res = await fetch(endpoint + '/mockMessagesWithNames');
     
     if (res.status >= 400) {
       throw new Error("Bad response from server");
     }
     
-    const user = await res.json();
+    const message = await res.json();
   
-    console.log(user);
+    return message
   } catch (err) {
     console.error(err);
   }
   };
 
   // todo: replace this with fetch to get the messages from the server
-  // const { mockMessages } = await import(`${endpoint}/mockMessages`);
-  // const url = "http://localhost:3003/mockMessages"
-  // const respon = await fetch(url)
-  // const data = await respon.json()
-  // return console.log(data)
-  // fetch('http://localhost:3003/mockMessages')
-  // .then(resp => resp.json())
-  // .then(data => {
-  //   console.log(data)
-  // })
+
   // todo: this should be implemented in the server. Chat Messages should already have the authors' names.
   // todo: remove this mapping when getting the data from the server
-  // const mockMessagesWithNames = mockMessages.map((message: Message) => {
-  //   const author = mockUsers.find(user => user.id === message.authorId);
-  //   const authorName = author && author.name;
-  //   return { ...message, authorName };
-  // });
-
-  // return mockMessagesWithNames;
+  
 
 
 /**
@@ -51,8 +36,20 @@ export async function getMessages() {
  **/
 export async function getUsers() {
   // todo: replace this with fetch to get the user list from the server
-  const { mockUsers } = await import(`${endpoint}/mockUsers`);
-  return mockUsers;
+
+try {
+  const res = await fetch(endpoint + '/mockUsers');
+  
+  if (res.status >= 400) {
+    throw new Error("Bad response from server");
+  }
+  
+  const user = await res.json();
+
+  return user
+} catch (err) {
+  console.error(err);
+}
 }
 
 
@@ -65,6 +62,13 @@ export async function getUserDetails(userId: number) {
   //  You can use mockUserDetails.ts for the list of user details in the server.
   const res = await fetch(`https://jsonplaceholder.typicode.com/users?id=${userId}`);
   return (await res.json())[0];
+  // const listOFUsers = await getUsers()
+  // listOFUsers.forEach(Mockuser => {
+  //   if (Mockuser.id === userId){
+  //     return  Mockuser
+  //   }
+  // });
+   
 }
 
 /**
@@ -72,6 +76,20 @@ export async function getUserDetails(userId: number) {
  **/
 export async function addNewMessage(message: Message) {
   // todo: implement sending a new message to the server
+  fetch('http://localhost:8000/mockMessagesWithNames', {
+    method: 'POST',
+    body: JSON.stringify({
+      message: message.body,
+      id: message.id,
+      timestamp: message.timestamp,
+      authorId: message.authorId
+    
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
 }
 
 /**
@@ -79,4 +97,5 @@ export async function addNewMessage(message: Message) {
  **/
 export async function changeMessageLikes(messageId: number, userId: number, like: boolean) {
   // todo: implement sending a rquest to change the like of a message by the user
+  
 }
